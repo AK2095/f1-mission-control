@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0a0e1a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="F1 Mission Control" />
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23e10600%22/><text y=%2272%22 x=%2250%22 text-anchor=%22middle%22 font-size=%2272%22 font-weight=%22900%22 fill=%22white%22 font-family=%22-apple-system%22>F1</text></svg>" />
+<title>F1 · Mission Control</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0e1a;
+    --card: #131826;
+    --card-2: #1a2034;
+    --border: #2a3447;
+    --ink: #f1f5f9;
+    --ink-2: #cbd5e1;
+    --ink-3: #94a3b8;
+    --red: #e10600;
+    --green: #4ade80;
+    --green-bg: rgba(74,222,128,0.12);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.12);
+    --rose: #fb7185;
+    --rose-bg: rgba(251,113,133,0.12);
+    --sky: #38bdf8;
+    --sky-bg: rgba(56,189,248,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    line-height: 1.4; -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+  body { padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); min-height: 100vh; }
+
+  .wrap { max-width: 480px; margin: 0 auto; padding: 12px 16px 80px; }
+
+  /* HERO CARD */
+  .hero {
+    background: linear-gradient(140deg, #1a2238 0%, #2a1212 100%);
+    border-radius: 20px; padding: 20px 18px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .hero::before {
+    content: ''; position: absolute; right: -50px; top: -50px; width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(225,6,0,0.5), transparent 70%); border-radius: 50%;
+  }
+  .hero-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; z-index: 1; flex-wrap: wrap; }
+  .rank-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1f2937;
+    padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 0.92rem;
+    box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+  }
+  .points-big { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1; margin-top: 4px; }
+  .delta-week { font-size: 0.85rem; color: var(--green); font-weight: 600; margin-top: 2px; }
+  .delta-week.neg { color: var(--rose); }
+  .hero-team { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 8px; letter-spacing: 0.04em; }
+
+  .gap-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; position: relative; z-index: 1; }
+  .gap-card { background: rgba(0,0,0,0.25); border-radius: 12px; padding: 10px 12px; backdrop-filter: blur(8px); }
+  .gap-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.55); }
+  .gap-value { font-size: 1.3rem; font-weight: 800; margin-top: 2px; }
+  .gap-value.pos { color: var(--green); }
+  .gap-value.neg { color: var(--rose); }
+  .gap-sub { font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 1px; }
+
+  /* COUNTDOWN BANNER */
+  .countdown-banner {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  }
+  .countdown-banner .race { font-weight: 700; font-size: 0.95rem; }
+  .countdown-banner .race-sub { font-size: 0.72rem; color: var(--ink-3); margin-top: 2px; }
+  .countdown-banner .timer { font-weight: 800; color: var(--amber); font-size: 1.1rem; white-space: nowrap; }
+  .countdown-banner.live .timer { color: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* WEATHER STRIP */
+  .weather-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-top: 12px;
+  }
+  .weather-cell { text-align: center; }
+  .weather-cell-label { font-size: 0.65rem; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .weather-cell-value { font-size: 1.15rem; font-weight: 800; margin-top: 4px; }
+  .weather-cell-value.warn { color: var(--amber); }
+  .weather-cell-value.danger { color: var(--rose); }
+
+  /* SECTION HEADER */
+  .section { margin-top: 22px; }
+  .section h2 {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3);
+    margin-bottom: 10px; padding-left: 4px; display: flex; align-items: center; gap: 8px;
+  }
+  .section h2::before {
+    content: ''; width: 3px; height: 12px; background: var(--red); border-radius: 2px;
+  }
+
+  /* LINEUP CARDS */
+  .lineup { display: flex; flex-direction: column; gap: 8px; }
+  .driver-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    border-left: 4px solid var(--ink-3);
+  }
+  .driver-card.mclaren { border-left-color: #ff8000; }
+  .driver-card.mercedes { border-left-color: #00d2be; }
+  .driver-card.ferrari { border-left-color: #dc0000; }
+  .driver-card.redbull { border-left-color: #1e41ff; }
+  .driver-card.has-2x {
+    background: linear-gradient(90deg, rgba(225,6,0,0.15), var(--card) 30%);
+    border-color: var(--red);
+  }
+  .driver-info { flex: 1; min-width: 0; }
+  .driver-name { font-weight: 700; font-size: 0.95rem; }
+  .driver-meta { font-size: 0.72rem; color: var(--ink-3); margin-top: 2px; }
+  .driver-pts { text-align: right; }
+  .driver-pts-num { font-weight: 800; font-size: 1.05rem; color: var(--green); }
+  .driver-pts-label { font-size: 0.65rem; color: var(--ink-3); text-transform: uppercase; }
+  .badge-2x {
+    background: var(--red); color: white; font-size: 0.62rem; font-weight: 800;
+    padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle;
+  }
+
+  /* WIN PROB BARS */
+  .winprob { display: flex; flex-direction: column; gap: 6px; }
+  .winprob-row {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; position: relative; overflow: hidden;
+  }
+  .winprob-row.mine { border-color: rgba(74,222,128,0.4); }
+  .winprob-row.has-2x { border-color: var(--red); }
+  .winprob-bar {
+    position: absolute; left: 0; top: 0; bottom: 0; background: rgba(56,189,248,0.12);
+    z-index: 0;
+  }
+  .winprob-row.mine .winprob-bar { background: rgba(74,222,128,0.12); }
+  .winprob-row.has-2x .winprob-bar { background: rgba(225,6,0,0.18); }
+  .winprob-content { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; }
+  .winprob-driver { font-weight: 600; font-size: 0.88rem; }
+  .winprob-driver .check { color: var(--green); margin-right: 4px; }
+  .winprob-pct { font-weight: 800; font-size: 1rem; }
+
+  /* ACTION CARDS */
+  .actions { display: flex; flex-direction: column; gap: 8px; }
+  .action-card {
+    background: var(--sky-bg); border-left: 3px solid var(--sky);
+    border-radius: 10px; padding: 10px 12px;
+  }
+  .action-card.amber { background: var(--amber-bg); border-left-color: var(--amber); }
+  .action-card.rose { background: var(--rose-bg); border-left-color: var(--rose); }
+  .action-card.green { background: var(--green-bg); border-left-color: var(--green); }
+  .action-title { font-weight: 700; font-size: 0.88rem; }
+  .action-detail { font-size: 0.78rem; color: var(--ink-2); margin-top: 4px; }
+
+  /* STANDINGS */
+  .standings { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .standings-row {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); gap: 10px;
+  }
+  .standings-row:last-child { border-bottom: none; }
+  .standings-row.you {
+    background: linear-gradient(90deg, rgba(225,6,0,0.18), transparent);
+    border-left: 3px solid var(--red); padding-left: 11px;
+  }
+  .standings-rank { font-weight: 800; font-size: 0.95rem; color: var(--ink-3); }
+  .standings-row.you .standings-rank { color: var(--amber); }
+  .standings-team { font-weight: 600; font-size: 0.88rem; }
+  .standings-mgr { font-size: 0.72rem; color: var(--ink-3); margin-top: 1px; }
+  .standings-pts { font-weight: 800; font-size: 1rem; }
+
+  /* CHIP PLAN */
+  .chip-plan { display: flex; flex-direction: column; gap: 6px; }
+  .chip-row {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .chip-row.next {
+    background: linear-gradient(90deg, rgba(225,6,0,0.18), var(--card) 60%);
+    border-color: var(--red);
+  }
+  .chip-row.used { opacity: 0.5; }
+  .chip-info { flex: 1; min-width: 0; }
+  .chip-race { font-weight: 700; font-size: 0.88rem; }
+  .chip-date { font-size: 0.7rem; color: var(--ink-3); }
+  .chip-name { font-weight: 700; font-size: 0.82rem; text-align: right; max-width: 50%; }
+  .chip-name.used { color: var(--ink-3); text-decoration: line-through; }
+  .chip-name.next { color: var(--red); }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 32px; padding: 16px; text-align: center;
+    font-size: 0.72rem; color: var(--ink-3); line-height: 1.6;
+  }
+  .footer a { color: var(--sky); text-decoration: none; }
+  .pulse-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 4px; vertical-align: middle; animation: pulse 2s infinite; }
+</style>
+</head>
+<body>
+<script src="state.js"></script>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-row">
+      <div>
+        <div id="rank-badge" class="rank-badge">🏆 P? / ?</div>
+        <div id="points-big" class="points-big">—</div>
+        <div id="delta-week" class="delta-week">—</div>
+        <div class="hero-team" id="hero-team">— · "No Lanes In Hawaii" · 2026</div>
+      </div>
+    </div>
+    <div class="gap-row">
+      <div class="gap-card">
+        <div class="gap-label" id="gap-above-label">Gap above</div>
+        <div class="gap-value" id="gap-above-value">—</div>
+        <div class="gap-sub" id="gap-above-sub">—</div>
+      </div>
+      <div class="gap-card">
+        <div class="gap-label" id="gap-below-label">Gap below</div>
+        <div class="gap-value" id="gap-below-value">—</div>
+        <div class="gap-sub" id="gap-below-sub">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-banner" id="countdown-banner">
+    <div>
+      <div class="race" id="race-name">—</div>
+      <div class="race-sub" id="race-sub">—</div>
+    </div>
+    <div class="timer" id="race-timer">—</div>
+  </div>
+
+  <!-- WEATHER -->
+  <div class="weather-strip" id="weather-strip"></div>
+
+  <!-- LINEUP -->
+  <div class="section">
+    <h2>🏁 Active Lineup · Locked</h2>
+    <div class="lineup" id="lineup-cards"></div>
+  </div>
+
+  <!-- WIN PROB -->
+  <div class="section">
+    <h2>📊 Sunday Win Probability</h2>
+    <div class="winprob" id="winprob-list"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="section">
+    <h2>🎯 Race-Day Action Items</h2>
+    <div class="actions" id="actions-list"></div>
+  </div>
+
+  <!-- STANDINGS -->
+  <div class="section">
+    <h2>🏆 League Standings</h2>
+    <div class="standings" id="standings-list"></div>
+  </div>
+
+  <!-- CHIP PLAN -->
+  <div class="section">
+    <h2>♟ Chip Plan · Next 4</h2>
+    <div class="chip-plan" id="chip-plan-list"></div>
+  </div>
+
+  <div class="footer">
+    <span class="pulse-dot"></span>Live · auto-updates from scheduled tasks<br>
+    <a href="index.html">→ Open full desktop dashboard</a>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// MOBILE RENDER
+// ============================================================
+
+function computeStandings() {
+  const userRow = { team: STATE.user.teamName, name: STATE.user.name, points: STATE.user.points, deltaWeekend: STATE.user.deltaWeekend, prevRank: STATE.user.prevRank, you: true };
+  const all = [userRow, ...STATE.rivals.map(r => ({...r, you: false}))]
+    .sort((a, b) => b.points - a.points)
+    .map((r, i) => ({...r, rank: i + 1}));
+  const me = all.find(r => r.you);
+  const above = all.find(r => r.rank === me.rank - 1) || null;
+  const below = all.find(r => r.rank === me.rank + 1) || null;
+  return { all, me, above, below };
+}
+
+function renderHero() {
+  const { me, above, below } = computeStandings();
+  document.getElementById('rank-badge').textContent = `🏆 P${me.rank} / ${me.points} pts`;
+  document.getElementById('points-big').textContent = me.points.toLocaleString();
+  const dw = me.deltaWeekend;
+  const dwEl = document.getElementById('delta-week');
+  dwEl.textContent = dw != null ? (dw >= 0 ? `+${dw} this weekend` : `${dw} this weekend`) : '';
+  dwEl.className = 'delta-week ' + (dw < 0 ? 'neg' : '');
+  document.getElementById('hero-team').textContent = `${STATE.user.teamName} · "No Lanes In Hawaii" · 2026`;
+
+  const above_l = document.getElementById('gap-above-label');
+  const above_v = document.getElementById('gap-above-value');
+  const above_s = document.getElementById('gap-above-sub');
+  if (above) {
+    above_l.textContent = `Deficit to P${above.rank}`;
+    above_v.textContent = `−${above.points - me.points}`;
+    above_v.className = 'gap-value neg';
+    above_s.textContent = above.name;
+  } else {
+    above_l.textContent = 'League Leader';
+    above_v.textContent = '👑';
+    above_v.className = 'gap-value pos';
+    above_s.textContent = 'You';
+  }
+
+  const below_l = document.getElementById('gap-below-label');
+  const below_v = document.getElementById('gap-below-value');
+  const below_s = document.getElementById('gap-below-sub');
+  if (below) {
+    below_l.textContent = `Lead vs P${below.rank}`;
+    below_v.textContent = `+${me.points - below.points}`;
+    below_v.className = 'gap-value pos';
+    below_s.textContent = below.name;
+  } else {
+    below_l.textContent = 'Bottom of league';
+    below_v.textContent = '—';
+    below_v.className = 'gap-value';
+    below_s.textContent = '';
+  }
+}
+
+function renderCountdown() {
+  document.getElementById('race-name').textContent = `🇺🇸 ${RACE_SCHEDULE.race} · R${RACE_SCHEDULE.round}`;
+  document.getElementById('race-sub').textContent = RACE_SCHEDULE.raceStartLocalLabel;
+  const banner = document.getElementById('countdown-banner');
+  const raceTime = new Date(RACE_SCHEDULE.raceStartUTC);
+  const now = new Date();
+  const diff = raceTime - now;
+  const timer = document.getElementById('race-timer');
+  if (diff <= 0) {
+    const sinceStart = Math.abs(diff);
+    const hrs = Math.floor(sinceStart / 3600000);
+    if (hrs < 4) {
+      timer.textContent = '🟢 LIVE';
+      banner.classList.add('live');
+    } else {
+      timer.textContent = '✅ Done';
+      banner.classList.remove('live');
+    }
+  } else {
+    const days = Math.floor(diff / 86400000);
+    const hrs = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    timer.textContent = days > 0 ? `T-${days}d ${hrs}h` : `T-${hrs}h ${mins}m`;
+  }
+}
+
+function renderWeather() {
+  const w = STATE.race.weather;
+  const cells = [
+    { label: 'Rain', value: `${w.rain}%`, cls: w.rain >= 60 ? 'warn' : '' },
+    { label: 'Thunder', value: `${w.thunder}%`, cls: w.thunder >= 50 ? 'warn' : '' },
+    { label: 'Halt risk', value: `${w.halt}%`, cls: w.halt >= 25 ? 'danger' : w.halt >= 15 ? 'warn' : '' }
+  ];
+  document.getElementById('weather-strip').innerHTML = cells.map(c =>
+    `<div class="weather-cell"><div class="weather-cell-label">${c.label}</div><div class="weather-cell-value ${c.cls}">${c.value}</div></div>`
+  ).join('');
+}
+
+function renderLineup() {
+  const html = STATE.user.lineup.map(d => {
+    const has2x = d.role && d.role.includes('2X');
+    const proj = d.sundayE ? `${d.sundayE[0]}-${d.sundayE[1]}` : '—';
+    const teamCls = (d.teamClass || '').toLowerCase();
+    return `
+      <div class="driver-card ${teamCls} ${has2x ? 'has-2x' : ''}">
+        <div class="driver-info">
+          <div class="driver-name">${d.name}${has2x ? '<span class="badge-2x">2X DRS</span>' : ''}</div>
+          <div class="driver-meta">${d.team} · $${d.price}M${d.gridRace !== '—' ? ` · Grid P${d.gridRace}` : ''}</div>
+        </div>
+        <div class="driver-pts">
+          <div class="driver-pts-num">${proj}</div>
+          <div class="driver-pts-label">Sun E[pts]</div>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('lineup-cards').innerHTML = html;
+}
+
+function renderWinProb() {
+  const max = Math.max(...STATE.winProbabilities.map(d => d.poly));
+  const html = [...STATE.winProbabilities].sort((a, b) => b.poly - a.poly).slice(0, 7).map(d => {
+    const has2x = d.mark === '2x';
+    const cls = has2x ? 'has-2x' : (d.mine ? 'mine' : '');
+    const widthPct = (d.poly / max) * 100;
+    return `
+      <div class="winprob-row ${cls}">
+        <div class="winprob-bar" style="width: ${widthPct}%"></div>
+        <div class="winprob-content">
+          <div class="winprob-driver">
+            ${d.mine ? '<span class="check">✓</span>' : ''}${d.driver}${has2x ? '<span class="badge-2x">2X</span>' : ''}
+          </div>
+          <div class="winprob-pct">${d.poly}%</div>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('winprob-list').innerHTML = html;
+}
+
+function renderActions() {
+  // Pull top strategy considerations + one urgent risk
+  const strat = (STATE.thingsToConsider?.strategyConsiderations || []).slice(0, 3);
+  const risks = (STATE.risks || []).filter(r => r.level === 'high').slice(0, 1);
+
+  const items = [
+    ...strat.map(s => ({ title: s.title, detail: s.detail, cls: '' })),
+    ...risks.map(r => ({ title: `⚠️ ${r.title} (${r.prob})`, detail: `${r.impact} · ${r.mitigation}`, cls: 'rose' }))
+  ];
+
+  document.getElementById('actions-list').innerHTML = items.map(i =>
+    `<div class="action-card ${i.cls}">
+      <div class="action-title">${i.title}</div>
+      <div class="action-detail">${i.detail}</div>
+    </div>`
+  ).join('');
+}
+
+function renderStandings() {
+  const { all, me } = computeStandings();
+  const html = all.map(t =>
+    `<div class="standings-row ${t.you ? 'you' : ''}">
+      <div class="standings-rank">P${t.rank}</div>
+      <div>
+        <div class="standings-team">${t.team || t.teamName}</div>
+        <div class="standings-mgr">${t.name}${t.you ? ' · you' : ''}</div>
+      </div>
+      <div class="standings-pts">${t.points}</div>
+    </div>`
+  ).join('');
+  document.getElementById('standings-list').innerHTML = html;
+}
+
+function renderChipPlan() {
+  // Insert montreal between miami and rest of plan, take first 4 future races
+  const plan = [STATE.chipPlan[0], STATE.montreal, ...STATE.chipPlan.slice(1)].slice(0, 5);
+  const html = plan.map(p => {
+    const cls = p.status === 'used' ? 'used' : (p.status === 'next' ? 'next' : '');
+    const nameCls = p.status === 'used' ? 'used' : (p.status === 'next' ? 'next' : '');
+    return `
+      <div class="chip-row ${cls}">
+        <div class="chip-info">
+          <div class="chip-race">${p.race}${p.sprint ? ' 🏃' : ''}</div>
+          <div class="chip-date">${p.date}</div>
+        </div>
+        <div class="chip-name ${nameCls}">${p.chip}</div>
+      </div>`;
+  }).join('');
+  document.getElementById('chip-plan-list').innerHTML = html;
+}
+
+// BOOT
+renderHero();
+renderCountdown();
+renderWeather();
+renderLineup();
+renderWinProb();
+renderActions();
+renderStandings();
+renderChipPlan();
+setInterval(renderCountdown, 60000);
+</script>
+</body>
+</html>
