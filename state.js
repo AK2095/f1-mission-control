@@ -8,9 +8,9 @@ const STATE = {
     teamName: 'AMG_AK',
     name: 'Akshay Koottala',
     rank: 1,
-    prevRank: 3,
-    points: 1024,
-    deltaWeekend: 148,
+    prevRank: 1,
+    points: 1169,
+    deltaWeekend: 293,
     chipActive: 'Limitless',
     chipsRemaining: ['Extra DRS Boost', 'Wildcard', 'No Negative', 'Autopilot'],
     chipsBurned: ['Limitless'],
@@ -25,19 +25,19 @@ const STATE = {
     ]
   },
   rivals: [
-    { rank: 2, team: 'Force Philadelphia', name: 'Max Devers', points: 1014, deltaWeekend: 76, sprintScore: 12, chipsBurned: ['Extra DRS Boost'], chipsRemaining: ['Wildcard', 'Limitless', 'No Negative', 'Autopilot'], lineup: ['ANT (2x)', 'HUL', 'OCO', 'LAW', 'PER', 'Ferrari', 'McLaren'], note: 'Burned 3x at China · Took -10 transfer hit at Miami sprint' },
-    { rank: 3, team: 'SuperFastLex', name: 'Al Dev', points: 948, deltaWeekend: 69, sprintScore: '~58', chipsBurned: [], chipsRemaining: ['?'], lineup: ['HAM (2x)', 'PER', 'LIN', 'LAW', 'COL', 'Mercedes', 'Ferrari'], note: 'Pattern: HAM + Ferrari · Mercedes constructor' },
-    { rank: 4, team: 'Hawaii Hamilton', name: 'Grant Palmer', points: 721 },
-    { rank: 5, team: 'Forza Chiacchio', name: 'Michele Chiacchio', points: 719 },
-    { rank: 6, team: 'No Lane Nori', name: 'Erica Goodyear', points: 694 },
-    { rank: 7, team: 'Rawdawg Racing Club', name: 'Randall Jordan', points: 659 },
-    { rank: 8, team: "Bandit's Booookaaahhhke...", name: 'Jade Rodriguez', points: 335 }
+    { rank: 2, team: 'Force Philadelphia', name: 'Max Devers', points: 1089, deltaWeekend: 75, sprintScore: 12, chipsBurned: ['Extra DRS Boost'], chipsRemaining: ['Wildcard', 'Limitless', 'No Negative', 'Autopilot'], lineup: ['ANT (2x)', 'HUL', 'OCO', 'LAW', 'PER', 'Ferrari', 'McLaren'], note: 'ANT 2x paid off (P1 win) but no McLaren constructor capped his upside vs Akshay' },
+    { rank: 3, team: 'SuperFastLex', name: 'Al Dev', points: 996, deltaWeekend: 48, sprintScore: '~58', chipsBurned: [], chipsRemaining: ['?'], lineup: ['HAM (2x)', 'PER', 'LIN', 'LAW', 'COL', 'Mercedes', 'Ferrari'], note: 'HAM 2x soft (P7 finish). Mercedes + Ferrari constructors + RUS P4 saved his weekend' },
+    { rank: 4, team: 'Hawaii Hamilton', name: 'Grant Palmer', points: 774, deltaWeekend: 53 },
+    { rank: 5, team: 'Forza Chiacchio', name: 'Michele Chiacchio', points: 769, deltaWeekend: 50 },
+    { rank: 6, team: 'No Lane Nori', name: 'Erica Goodyear', points: 743, deltaWeekend: 49 },
+    { rank: 7, team: 'Rawdawg Racing Club', name: 'Randall Jordan', points: 675, deltaWeekend: 16 },
+    { rank: 8, team: "Bandit's Booookaaahhhke...", name: 'Jade Rodriguez', points: 339, deltaWeekend: 4 }
   ],
   race: {
-    name: 'Miami GP',
-    round: 6,
+    name: 'Canadian GP',
+    round: 7,
     isSprint: true,
-    sessions: { fp1: 'done', sprintQuali: 'done', sprint: 'done', raceQuali: 'done', race: 'pending' },
+    sessions: { fp1: 'pending', sprintQuali: 'pending', sprint: 'pending', raceQuali: 'pending', race: 'pending' },
     raceGrid: [
       { pos: 1, driver: 'K. Antonelli', team: 'Mercedes', teamClass: 'mercedes', mine: true },
       { pos: 2, driver: 'M. Verstappen', team: 'Red Bull', teamClass: 'redbull', mine: false },
@@ -50,7 +50,7 @@ const STATE = {
       { pos: 9, driver: 'I. Hadjar', team: 'Racing Bulls', teamClass: 'rb', mine: false },
       { pos: 10, driver: 'P. Gasly', team: 'Alpine', teamClass: 'alpine', mine: false }
     ],
-    weather: { rain: 57, thunder: 45, halt: 18, dryProb: 28, wetProb: 54, haltProb: 18 }
+    weather: { rain: 0, thunder: 0, halt: 0, dryProb: 0, wetProb: 0, haltProb: 0 }
   },
   winProbabilities: [
     { driver: 'K. Antonelli', team: 'mercedes', poly: 38, dk: 37, sharp: 'pole premium', mine: true },
@@ -127,6 +127,7 @@ const STATE = {
       { driver: 'N. Hulkenberg', team: 'Audi/Sauber', code: 'HUL', trend: '🟢 Track Fit', formNote: 'NEW (Tue intel): Finished ahead of grid position last 2 Montreal outings. $5.0M = best budget enabler for chip race. F1 Fantasy Strategist tag: "safest budget pick".', strength: 'Race-craft over-performance vs grid slot', weakness: 'Sauber pace ceiling caps upside', dnfRisk: '7%' }
     ],
     strategyConsiderations: [
+      { title: '✅ Miami lessons (POST-RACE)', detail: 'Limitless paid off (+70 net vs Max). McLaren constructor was the differential lever (Max didn\'t hold it). LEC 2x at P6 finish was soft (-3 grid drop) but premium-stacked lineup absorbed it. Antonelli pole→win → he\'s now the safe 2x default for non-wet races. Apply to Montreal: McLaren constructor stays, premium driver stack is the formula.' },
       { title: 'Montreal wet contingency (elevated)', detail: 'Race moved to May 24 (earlier than historical June slot) → cooler temps (~13.5°C avg) and HIGHER rain probability per gpblog/canada.gp forecasts. Wet specialists in your stack: NOR, LEC, HAM. Antonelli has zero F1 wet Montreal data — biggest exposure point.' },
       { title: '3x DRS Boost deployment plan (CHIP RACE)', detail: 'Deploy on highest post-qualifying xPts driver. Decision tree: dry + Mercedes upgrade works → ANT 3x. Wet → NOR 3x. Mercedes upgrade flat + dry → keep LEC 3x. Lock decision Saturday post-quali, not before.' },
       { title: 'Mercedes constructor pivot trigger', detail: 'If Mercedes Montreal floor fails to lift pace AND PU concern recurs, swap Mercedes → McLaren constructor before Spain. xPts gap MER 79 → MCL 78 is one bad weekend from flipping.' },
@@ -135,8 +136,7 @@ const STATE = {
       { title: 'PU-driven DNF jeopardy elevated season-wide', detail: 'NEW (Tue intel): 2026 reliability is differentiator. Field on 2nd/3rd Control Electronics already. Bake +2-3% baseline DNF into sims. Mercedes pair: +5% over baseline until root cause signed off.' }
     ],
     scheduleEvents: [
-      { date: 'Sun May 3 — 1pm ET', event: '🚦 Miami GP race (RESCHEDULED · was 4pm)', detail: 'Moved 3hr earlier due to thunderstorm forecast.', urgent: true },
-      { date: 'Sun May 3 — 2:30pm ET', event: '🤖 Automatic post-race update fires', detail: 'Scheduled task f1-miami-postrace-update' },
+      { date: 'Sun May 3', event: '✅ Miami GP COMPLETE · ANT win · You +145 vs P2 +75', detail: 'Lead extended 10 → 80. Limitless burn validated by McLaren constructor + LEC 2x + ANT P1 stack.' },
       { date: 'Tue May 5 — 8am', event: '🤖 Weekly intel watcher fires', detail: 'f1-intel-watcher-weekly · 4-day lead before Montreal practice prep window opens' },
       { date: 'Tue May 12 — 8am', event: '🤖 Weekly intel watcher fires', detail: 'Mid-cycle Montreal preview' },
       { date: 'Thu May 21', event: '📅 Pre-Montreal prep · 3x DRS chip plan', detail: 'First-ever Montreal sprint · deploy 3x on highest xPts driver post-quali' },
@@ -167,10 +167,10 @@ const STATE = {
 };
 
 const RACE_SCHEDULE = {
-  race: 'Miami GP',
-  round: 6,
-  raceStartUTC: '2026-05-03T17:00:00Z',
-  raceStartLocalLabel: '1:00 PM ET (rescheduled · thunderstorm avoidance)',
-  scheduleChangedAt: '2026-05-02T23:00:00Z',
-  changeReason: 'Race moved 3 hours earlier from original 4pm ET start due to expected severe thunderstorms in Miami Gardens during late afternoon. Confirmed by Formula1.com and Sky Sports.'
+  race: 'Canadian GP',
+  round: 7,
+  raceStartUTC: '2026-05-24T18:00:00Z',
+  raceStartLocalLabel: '2:00 PM ET (Sprint weekend · first-ever Montreal sprint)',
+  scheduleChangedAt: null,
+  changeReason: null
 };
