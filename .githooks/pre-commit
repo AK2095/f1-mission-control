@@ -1,0 +1,7 @@
+#!/bin/sh
+# Pre-commit hook · validates state.js structure to prevent scheduled tasks
+# from accidentally dropping schema sections.
+#
+# Bypass intentionally with `git commit --no-verify` if you really need to.
+
+exec /usr/bin/python3 "$(git rev-parse --show-toplevel)/scripts/validate-state.py"
